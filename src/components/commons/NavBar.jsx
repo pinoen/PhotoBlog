@@ -1,13 +1,24 @@
 import { Computer, Mail, Notifications } from '@mui/icons-material'
 import { AppBar, Avatar, Badge, Box, InputBase, Menu, MenuItem, Toolbar, Typography, styled } from '@mui/material'
 import React, { useState } from 'react'
+import { auth } from '../../config/firebase'
+import { signOut } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
 
-const NavBar = () => {
-
+const NavBar = ({ setIsAuth }) => {
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
 
   const handleMenu = () => {
     setOpen(prev => !prev)
+  }
+
+  const handleLogOut = () => {
+    signOut(auth).then(() => {
+      localStorage.clear()
+      setIsAuth(false)
+      navigate('/login')
+    })
   }
 
   const StyledToolbar = styled(Toolbar)({
@@ -41,12 +52,12 @@ const NavBar = () => {
   }))
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="fixed">
       <StyledToolbar>
         <Typography
           sx={{ display: { xs: 'none', sm: 'block' } }}
           variant='h6' >
-          Emilio DEV
+          {localStorage.getItem('name')} Travel Memories
         </Typography>
         <Computer sx={{ display: { xs: 'block', sm: 'none' } }} />
         <Search><InputBase placeholder='Search...' /></Search>
@@ -62,16 +73,16 @@ const NavBar = () => {
 
           <Avatar
 
-            sx={{ width: 30, height: 30 }} src='https://avatars.githubusercontent.com/u/91059020?s=400&u=88f8cfabd830ccb36976d7a20998486b9e40d74c&v=4'
+            sx={{ width: 30, height: 30, cursor: 'pointer' }} src={localStorage.getItem('profilePic')}
             onClick={handleMenu} />
         </Icons>
 
         <UserBox onClick={handleMenu} >
-          <Avatar sx={{ width: 30, height: 30 }} src='https://avatars.githubusercontent.com/u/91059020?s=400&u=88f8cfabd830ccb36976d7a20998486b9e40d74c&v=4'
+          <Avatar sx={{ width: 30, height: 30, cursor: 'pointer' }} src={localStorage.getItem('profilePic')}
           />
           <Typography
             variant='span' >
-            pinoen
+            {localStorage.getItem('name')}
           </Typography>
 
         </UserBox>
@@ -93,7 +104,7 @@ const NavBar = () => {
       >
         <MenuItem>Profile</MenuItem>
         <MenuItem>My account</MenuItem>
-        <MenuItem>Logout</MenuItem>
+        <MenuItem onClick={handleLogOut} >Logout</MenuItem>
       </Menu>
     </AppBar>
   )

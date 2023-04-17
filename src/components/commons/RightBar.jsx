@@ -4,7 +4,7 @@ import React from 'react'
 const RightBar = () => {
   return (
     <Box
-      p={2}
+      p={10}
       sx={{ display: { xs: 'none', sm: 'block' } }}
       flex={2}>
       <Box position={'fixed'} width={340} >

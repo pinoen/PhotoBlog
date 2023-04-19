@@ -16,11 +16,9 @@ const AddPost = ({ isAuth }) => {
   const [message, setMessage] = useState('')
   const [date, setDate] = useState(null);
   const [imageUpload, setImageUpload] = useState(null)
-  const [imageUrl, setImageUrl] = useState('')
   const dateString = dayjs(date).toString().slice(5, 16);
   const navigate = useNavigate()
   const postsCollectionRef = collection(db, 'posts')
-  const imageListRef = ref(storage, 'images/')
 
   useEffect(() => {
     if (!isAuth) {
@@ -39,7 +37,7 @@ const AddPost = ({ isAuth }) => {
   const handleSubmit = async () => {
     handleModal()
     await addDoc(postsCollectionRef,
-      { title, message, dateString, imageUrl, author: { name: auth.currentUser.displayName, id: auth.currentUser.uid } })
+      { title, message, dateString, imageUrl: imageUpload, author: { name: auth.currentUser.displayName, id: auth.currentUser.uid } })
 
     const imageRef = ref(storage, `images/${imageUpload.name}`)
     uploadBytes(imageRef, imageUpload).then(() => {
@@ -57,16 +55,6 @@ const AddPost = ({ isAuth }) => {
       })
     })
   }
-
-  useEffect(() => {
-    listAll(imageListRef).then(res => res.items.forEach(item => {
-      getDownloadURL(item).then(url => {
-        if (item?.name == imageUpload?.name) {
-          setImageUrl(url)
-        }
-      })
-    }))
-  }, [imageUpload])
 
   const UserBox = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -128,7 +116,7 @@ const AddPost = ({ isAuth }) => {
 
           <Stack direction={'row'} mt={2} mb={3} gap={2} >
             <TextField
-              onChange={(e) => setImageUpload(e.target.files[0])}
+              onChange={(e) => setImageUpload(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -137,8 +125,8 @@ const AddPost = ({ isAuth }) => {
                 ),
               }}
 
-              label='Choose an image'
-              type='file' />
+              label='Enter image url'
+              type='url' />
 
           </Stack>
 
